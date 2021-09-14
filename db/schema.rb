@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_14_133527) do
+ActiveRecord::Schema.define(version: 2021_09_14_182440) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -36,6 +36,62 @@ ActiveRecord::Schema.define(version: 2021_09_14_133527) do
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
+  create_table "consumers", force: :cascade do |t|
+    t.string "user"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "email"
+    t.integer "age"
+    t.string "country"
+    t.string "city"
+    t.string "employment"
+    t.bigint "social_network_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["social_network_id"], name: "index_consumers_on_social_network_id"
+  end
+
+  create_table "crafts", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "creators", force: :cascade do |t|
+    t.string "user"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "email"
+    t.integer "age"
+    t.string "country"
+    t.string "city"
+    t.bigint "social_network_id", null: false
+    t.bigint "craft_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["craft_id"], name: "index_creators_on_craft_id"
+    t.index ["social_network_id"], name: "index_creators_on_social_network_id"
+  end
+
+  create_table "reviews", force: :cascade do |t|
+    t.string "title"
+    t.text "comment"
+    t.bigint "craft_id", null: false
+    t.bigint "consumer_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["consumer_id"], name: "index_reviews_on_consumer_id"
+    t.index ["craft_id"], name: "index_reviews_on_craft_id"
+  end
+
+  create_table "social_networks", force: :cascade do |t|
+    t.string "name"
+    t.string "url"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -49,4 +105,9 @@ ActiveRecord::Schema.define(version: 2021_09_14_133527) do
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "consumers", "social_networks"
+  add_foreign_key "creators", "crafts"
+  add_foreign_key "creators", "social_networks"
+  add_foreign_key "reviews", "consumers"
+  add_foreign_key "reviews", "crafts"
 end
